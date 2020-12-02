@@ -15,7 +15,6 @@ apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
 apply plugin:"org.grails.grails-web"
-apply plugin:"com.github.erdi.webdriver-binaries"
 apply plugin:"com.bertramlabs.asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
 
@@ -76,11 +75,6 @@ tasks.withType(GroovyCompile) {
     configure(groovyOptions) {
         forkOptions.jvmArgs = ['-Xmx1024m']
     }
-}
-
-webdriverBinaries {
-    chromedriver '2.45.0'
-    geckodriver '0.24.0'
 }
 
 tasks.withType(Test) {
