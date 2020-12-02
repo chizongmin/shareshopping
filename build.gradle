@@ -83,8 +83,6 @@ tasks.withType(Test) {
     systemProperty "webdriver.chrome.driver", System.getProperty('webdriver.chrome.driver')
     systemProperty "webdriver.gecko.driver", System.getProperty('webdriver.gecko.driver')
 }
-task assemble{}
-
 assets {
     minifyJs = true
     minifyCss = true
