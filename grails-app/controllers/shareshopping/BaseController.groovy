@@ -5,7 +5,7 @@ import grails.converters.JSON
 
 class BaseController {
     //数据返回
-    protected rv(data,code=200,message="success") {
+    protected rv(data=[:],code=200,message="success") {
         def result=[data:data,code:code,message:message]
         render result as JSON
     }

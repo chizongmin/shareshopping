@@ -62,7 +62,9 @@ grails:
     views:
         default:
             codec: josn
-
+server:
+    servlet:
+        context-path: /share
 ---
 environments:
     development:
@@ -70,7 +72,7 @@ environments:
             mongodb:
                 host: 123.56.45.131
                 port: 27017
-                databaseName: dev
+                databaseName: beta
                 options:
                     connectionsPerHost: 100
                     threadsAllowedToBlockForConnectionMultiplier: 5

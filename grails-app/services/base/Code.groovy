@@ -1,7 +1,8 @@
 package base
 
 enum Code {
-    accountPasswordError(1101, "账号或密码错误")
+    accountPasswordError(1101, "账号或密码错误"),
+    oldPasswordError(1102, "原密码错误")
 
 
 

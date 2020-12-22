@@ -14,7 +14,7 @@ class ManagerService  extends MongoService{
         def result=[code:200]
         def account=map.account
         def password=map.password
-        if(!account||password){
+        if(!account||!password){
             throw new InvalidParameterException("account and password can not be null!")
         }
         password=password.encodeAsSHA256()
@@ -27,5 +27,19 @@ class ManagerService  extends MongoService{
             result.data=data
             return result
         }
+    }
+    def logout(uid){
+        //clean token
+    }
+    def changePassword(uid,map){
+        def result=[code:200]
+        def oldPassword=map.oldPassword
+        def manager=this.findOne([id:uid,password:oldPassword.encodeAsSHA256()])
+        if(!manager){
+            return Code.fillCode(Code.oldPasswordError)
+        }
+        def newPassword=map.newPassword..encodeAsSHA256()
+        this.updateById(manager.id,[password:newPassword])
+        result
     }
 }

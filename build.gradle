@@ -61,6 +61,7 @@ dependencies {
     compile 'org.grails:gorm-mongodb-spring-boot:7.0.0.RELEASE'
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-web-testing-support"
+//    compile 'org.grails.plugins:redis:2.0.5'
 }
 
 bootRun {
