@@ -1,5 +1,6 @@
 package user
 
+import background.BackgroundInterceptor
 import base.Code
 import base.InvalidParameterException
 import mongo.MongoService
@@ -22,9 +23,11 @@ class ManagerService  extends MongoService{
         if(!manager){
             return Code.fillCode(Code.accountPasswordError)
         }else{
+            def token= UUID.randomUUID().toString()
             def data=manager.subMap(["name","account","roles"])
-            data.token="pendding"
+            data.token=token
             result.data=data
+            BackgroundInterceptor.cacheMap[token]=[uid:manager.id,uName:manager.name,roles:manager.roles?.join(",")]
             return result
         }
     }

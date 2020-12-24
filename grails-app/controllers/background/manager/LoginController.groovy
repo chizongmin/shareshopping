@@ -1,5 +1,4 @@
 package background.manager
-
 import shareshopping.BaseController
 import user.ManagerService
 

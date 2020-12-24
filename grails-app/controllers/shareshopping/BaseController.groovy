@@ -10,11 +10,13 @@ class BaseController {
         render result as JSON
     }
     def handleInvalidParameterException(InvalidParameterException e) {
+        log.error(e.message,e)
         def result=[data:[:],code:406,message:e.message]
         render result as JSON
     }
     def handleException(Exception e) {
-        def result=[data:[:],code:200,message:e.message]
+        log.error(e.message,e)
+        def result=[data:[:],code:500,message:e.message]
         render result as JSON
     }
 }
