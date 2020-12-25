@@ -5,8 +5,10 @@ import base.Code
 import base.InvalidParameterException
 import mongo.MongoService
 
-class ManagerService  extends MongoService{
+import java.util.concurrent.ConcurrentHashMap
 
+class ManagerService  extends MongoService{
+    static cacheMap = new ConcurrentHashMap()
     @Override
     String collectionName() {
         "manager"
@@ -27,12 +29,12 @@ class ManagerService  extends MongoService{
             def data=manager.subMap(["name","account","roles"])
             data.token=token
             result.data=data
-            BackgroundInterceptor.cacheMap[token]=[uid:manager.id,uName:manager.name,roles:manager.roles?.join(",")]
+            cacheMap[token]=[uid:manager.id,uName:manager.name,roles:manager.roles?.join(",")]
             return result
         }
     }
     def logout(token){
-        BackgroundInterceptor.cacheMap.remove(token)
+        cacheMap.remove(token)
     }
     def changePassword(uid,map){
         def result=[code:200]

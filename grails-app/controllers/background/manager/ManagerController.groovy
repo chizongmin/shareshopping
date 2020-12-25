@@ -11,7 +11,7 @@ class ManagerController extends BaseController{
         rv(manager)
     }
     def logout(){
-        def token=params.token
+        def token =request.getHeader("X-TOKEN")
         managerService.logout(token)
         rv()
     }

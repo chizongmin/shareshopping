@@ -1,12 +1,9 @@
 package background
 
 import org.springframework.http.HttpStatus
-
-import java.util.concurrent.ConcurrentHashMap
-
-
+import user.ManagerService
 class BackgroundInterceptor {
-    static cacheMap = new ConcurrentHashMap()
+
     BackgroundInterceptor(){
         matchAll().excludes(controller:"login")
     }
@@ -16,7 +13,11 @@ class BackgroundInterceptor {
             response.sendError(HttpStatus.UNAUTHORIZED.value())
             return false
         }
-        def user=cacheMap[token]
+        def user= ManagerService.cacheMap[token]
+        if(!user){
+            response.sendError(HttpStatus.FORBIDDEN.value())
+            return false
+        }
         params<<user
         //添加用户操作记录
         def ip = request.getHeader('X-Forwarded-For') ?: request.getRemoteAddr()
