@@ -84,7 +84,7 @@ environments:
     beta:
         grails:
             mongodb:
-                host: 172.30.111.159
+                host: 127.0.0.1
                 port: 27017
                 databaseName: beta
                 options:
@@ -98,7 +98,7 @@ environments:
     production:
         grails:
             mongodb:
-                host: 172.30.111.159
+                host: 127.0.0.1
                 port: 27017
                 databaseName: prod
                 options:
