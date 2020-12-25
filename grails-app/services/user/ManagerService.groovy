@@ -31,8 +31,8 @@ class ManagerService  extends MongoService{
             return result
         }
     }
-    def logout(uid){
-        //clean token
+    def logout(token){
+        BackgroundInterceptor.cacheMap.remove(token)
     }
     def changePassword(uid,map){
         def result=[code:200]

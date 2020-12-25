@@ -11,8 +11,8 @@ class ManagerController extends BaseController{
         rv(manager)
     }
     def logout(){
-        def uid=params.uid
-        managerService.logout(uid)
+        def token=params.token
+        managerService.logout(token)
         rv()
     }
     def changePassword(){
