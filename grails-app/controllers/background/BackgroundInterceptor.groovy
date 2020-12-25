@@ -28,6 +28,7 @@ class BackgroundInterceptor {
            if (annotation?.value() == "SU") {
                kafkaSendService.sendLog(params.domain, data)
            }*/
+        return true
     }
 
     boolean after() { true }

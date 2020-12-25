@@ -62,9 +62,9 @@ grails:
     views:
         default:
             codec: josn
-server:
-    servlet:
-        context-path: /share
+#server:
+#    servlet:
+#        context-path: /share
 ---
 environments:
     development:
