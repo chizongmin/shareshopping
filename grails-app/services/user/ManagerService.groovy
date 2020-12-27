@@ -1,6 +1,4 @@
 package user
-
-import background.BackgroundInterceptor
 import base.Code
 import base.InvalidParameterException
 import mongo.MongoService
