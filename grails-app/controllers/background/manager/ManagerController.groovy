@@ -7,7 +7,8 @@ class ManagerController extends BaseController{
     ManagerService managerService
     def info() {
         def uid=params.uid
-        def manager=managerService.findById(uid)
+//        def manager=managerService.findById(uid)
+        def manager=managerService.findOne([id:"5fe1aaab2e180d73c486f4cf01"])
         rv(manager)
     }
     def logout(){

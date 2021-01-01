@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus
 import user.ManagerService
 class BackgroundInterceptor {
 
-    BackgroundInterceptor(){
+/*    BackgroundInterceptor(){
         matchAll().excludes(controller:"login")
-    }
+    }*/
     boolean before() {
         def token = request.getHeader("X-TOKEN")
         if(!token){
@@ -18,7 +18,7 @@ class BackgroundInterceptor {
             response.sendError(HttpStatus.FORBIDDEN.value())
             return false
         }
-        params<<user
+        params<<user?:[:]
         //添加用户操作记录
         def ip = request.getHeader('X-Forwarded-For') ?: request.getRemoteAddr()
         def data = [uid: params.uid, uName: params.uName, controller: params.controller, action: params.action, ip: ip,  params: params]
