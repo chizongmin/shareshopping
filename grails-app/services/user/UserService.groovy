@@ -16,6 +16,12 @@ class UserService extends MongoService{
         if(params.startTime&&params.endTime){
             filter.'$and'=[[dateCreated:['$gte': DateTools.parseDate(params.startDate)]], [dateCreated:['$lte':DateTools.parseDate(params.endDate)]]]
         }
+        if(params.country){
+            filter.country=params.country
+        }
+        if(params.villager){
+            filter.villager=params.villager
+        }
         return this.findAll(filter,(pageNumber-1)*pageSize,pageSize,[dateCreated:-1])
     }
 }
