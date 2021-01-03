@@ -11,6 +11,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import com.mongodb.client.FindIterable
+import com.mongodb.client.model.ReturnDocument
 
 abstract class MongoService implements InitializingBean{
     private static final int DEFAULT_BATCH_SIZE = 1000
