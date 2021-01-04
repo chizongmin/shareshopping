@@ -13,4 +13,9 @@ class CategoryController extends BaseController{
         categoryService.updateInfo(params)
         rv()
     }
+    def updateSort(){
+        def params=request.getJSON() as HashMap
+        categoryService.updateSort(params)
+        rv()
+    }
 }

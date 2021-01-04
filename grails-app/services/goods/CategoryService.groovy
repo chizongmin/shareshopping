@@ -24,4 +24,10 @@ class CategoryService extends MongoService{
         def category=this.updateById(params.id,params)
         return category
     }
+    def updateSort(params){
+        def sortList=params.list
+        sortList.eachWithIndex { entry, i ->
+            this.updateById(entry.id,[sort: i])
+        }
+    }
 }
