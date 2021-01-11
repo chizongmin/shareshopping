@@ -5,7 +5,7 @@ import shareshopping.BaseController
 class CategoryController extends BaseController{
     def categoryService
     def editList() {
-        def data=categoryService.editList()
+        def data=categoryService.editList(params)
         rv(data)
     }
     def updateInfo(){

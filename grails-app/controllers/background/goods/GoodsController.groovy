@@ -17,4 +17,8 @@ class GoodsController extends BaseController{
         goodsService.deleteGoods(params.id)
         rv()
     }
+    def addToCategoryList(){
+        def data=goodsService.addToCategoryList(params.index)
+        rv(data)
+    }
 }

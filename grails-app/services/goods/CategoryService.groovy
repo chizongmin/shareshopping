@@ -10,8 +10,12 @@ class CategoryService extends MongoService{
     String collectionName() {
         "category"
     }
-    def editList(){
-        def list=this.findAll([:],[sort:1])
+    def editList(params){
+        def filter=[:]
+        if(params.status){
+            filter.status=params.status
+        }
+        def list=this.findAll(filter,[sort:1])
         list.each{ category->
             category.strStatus= NameMap.statusMap[category.status]
         }

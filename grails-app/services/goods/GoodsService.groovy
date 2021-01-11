@@ -4,7 +4,7 @@ import mongo.MongoService
 import shareshopping.NameMap
 
 class GoodsService extends MongoService{
-
+    def categoryService
     @Override
     String collectionName() {
         "goods"
@@ -21,7 +21,7 @@ class GoodsService extends MongoService{
         if(search){
             filter.name=['$regex':search, '$options': "i"]
         }
-        def list=this.findAll(filter,[dateCreated:1])
+        def list=this.findAll(filter,[dateCreated:-1])
         list.each{ goods->
             goods.strStatus= NameMap.statusMap[goods.status]
             goods.strNature= NameMap.natureMap[goods.nature]
@@ -30,5 +30,17 @@ class GoodsService extends MongoService{
     }
     def deleteGoods(id){
         this.delete([id:id])
+    }
+    def addToCategoryList(index){
+        def list=this.findAll([status:"ENABLE"],[dateCreated:-1])
+        def category=categoryService.findById(index)
+        def goodsIds=category.goods*.id?:[]
+        list=list.findAll{!(it.id in goodsIds)}?:[]
+        list.each{ goods->
+            goods.strStatus= NameMap.statusMap[goods.status]
+            goods.strNature= NameMap.natureMap[goods.nature]
+        }
+        def listMap=list.groupBy {it.category}
+        return listMap
     }
 }
