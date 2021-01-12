@@ -34,4 +34,32 @@ class CategoryService extends MongoService{
             this.updateById(entry.id,[sort: i])
         }
     }
+    def addGoods(params){
+        def id=params.id
+        def addGoods=params.goods
+        if(!id||!addGoods){
+            return
+        }
+        def category=this.findById(id)
+        def goods=category.goods?:[]
+        addGoods=addGoods.findAll{!(it.id in goods*.id)}
+        goods.addAll(addGoods)
+        this.updateById(id,[goods:goods])
+    }
+    def deleteGoods(params){
+        def id=params.id
+        def goodsId=params.goodsId
+        if(!id||!goodsId){
+            return
+        }
+        def category=this.findById(id)
+        def goods=category.goods?:[]
+        def saveGoods=goods.findAll{it.id!=goodsId}
+        this.updateById(id,[goods:saveGoods])
+    }
+    def updateGoodsSort(params){
+        def goods=params.goods
+        def id=params.id
+        this.updateById(id,[goods:goods])
+    }
 }

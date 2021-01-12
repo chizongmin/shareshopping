@@ -9,9 +9,19 @@ class GoodsService extends MongoService{
     String collectionName() {
         "goods"
     }
-    def upsertGoods(uid,goods){
+    def upsertGoods(goods){
         if(goods.id){
             this.updateById(goods.id,goods)
+            //更新所有列表商品
+            def allCategory=categoryService.findAll([:])
+            allCategory.each{category->
+                def goodsList=category.goods?:[]
+                def index=goodsList.findIndexOf {it.id==goods.id}
+                if(index!=-1){
+                    goodsList[index]=goods
+                }
+                categoryService.updateById(category.id,[goods:goodsList])
+            }
         }else{
             this.save(goods)
         }

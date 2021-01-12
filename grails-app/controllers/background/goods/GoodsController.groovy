@@ -10,7 +10,7 @@ class GoodsController extends BaseController{
     }
     def upsert(){
         def map=request.getJSON()
-        goodsService.upsertGoods(params.uid,map as HashMap)
+        goodsService.upsertGoods(map as HashMap)
         rv()
     }
     def delete(){
