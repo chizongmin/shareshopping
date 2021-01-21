@@ -35,11 +35,21 @@ class GoodsService extends MongoService{
         list.each{ goods->
             goods.strStatus= NameMap.statusMap[goods.status]
             goods.strNature= NameMap.natureMap[goods.nature]
+            if(!goods.detailFileList){
+                goods.detailFileList=[]
+            }
         }
         return list
     }
     def deleteGoods(id){
         this.delete([id:id])
+        //更新所有列表商品
+        def allCategory=categoryService.findAll([:])
+        allCategory.each{category->
+            def goodsList=category.goods?:[]
+            def updateGoods=goodsList.findAll{it.id!=id}
+            categoryService.updateById(category.id,[goods:updateGoods])
+        }
     }
     def addToCategoryList(index){
         def list=this.findAll([status:"ENABLE"],[dateCreated:-1])
