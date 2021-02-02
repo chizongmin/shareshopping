@@ -62,4 +62,32 @@ class CategoryService extends MongoService{
         def id=params.id
         this.updateById(id,[goods:goods])
     }
+    def tabList(){
+        def result=[]
+        def list=this.findAll([status:"ENABLE"],[sort:1])
+        list.eachWithIndex{ item, i ->
+            def map=[id:item.id,name:item.name]
+            if(i==0){
+                def goods=item.goods?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
+                        remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
+                ]}
+                map.goods=goods
+            }else{
+                map.goods=[]
+            }
+            result<<map
+        }
+        return result
+    }
+    def tabMapGoods(){
+        def result=[:]
+        def list=this.findAll([status:"ENABLE"])
+        list.each{item->
+            def goods=item.goods?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
+                                           remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
+            ]}
+            result[item.id]=goods
+        }
+        result
+    }
 }
