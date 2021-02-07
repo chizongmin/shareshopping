@@ -4,6 +4,7 @@ import shareshopping.BaseController
 
 class WxGoodsController extends BaseController{
     def categoryService
+    def goodsService
     def tabList() {
         def data=categoryService.tabList()
         rv(data)
@@ -11,5 +12,9 @@ class WxGoodsController extends BaseController{
     def tabMapGoods(){
         def data=categoryService.tabMapGoods()
         rv(data)
+    }
+    def findById(){
+        def id=params.id
+        rv(goodsService.selectById(id))
     }
 }

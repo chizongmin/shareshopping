@@ -63,4 +63,16 @@ class GoodsService extends MongoService{
         def listMap=list.groupBy {it.category}
         return listMap
     }
+    def selectById(id){
+        def goods=this.findById(id)
+        def detailFileList=goods.detailFileList?:[]
+        def detailPic=[]
+        detailFileList.each{
+            def url=it.url.replaceFirst("/api","")
+            def map=[id:it.id,url:url]
+            detailPic<<map
+        }
+        goods.detailFileList=detailPic
+        return goods
+    }
 }
