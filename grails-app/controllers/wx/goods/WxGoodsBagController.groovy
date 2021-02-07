@@ -15,10 +15,10 @@ class WxGoodsBagController extends BaseController{
         def data=goodsBagService.list(token)
         rv(data)
     }
-    def delete(){
+    def deleteByIds(){
         def token=request.getHeader("token")
-        def id=params.id
-        goodsBagService.delete([token:token,id:id])
+        def map=request.getJSON() as HashMap
+        goodsBagService.deleteByIds(token,map)
         rv()
     }
     def updateTotal(){

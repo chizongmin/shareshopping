@@ -51,4 +51,8 @@ class GoodsBagService extends MongoService{
         def bag=this.findOne([token:token,goodsId:map.id])
         this.updateById(bag.id,[total:total])
     }
+    def deleteByIds(token,map){
+        def ids=map.ids as ArrayList
+        this.delete([token:token,goodsId:['$in':ids]])
+    }
 }
