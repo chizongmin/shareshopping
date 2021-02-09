@@ -17,4 +17,8 @@ class WxGoodsController extends BaseController{
         def id=params.id
         rv(goodsService.selectById(id))
     }
+    def findByIds(){
+        def map=request.getJSON() as HashMap
+        rv(goodsService.selectByIds(map.ids))
+    }
 }

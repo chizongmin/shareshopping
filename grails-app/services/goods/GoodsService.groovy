@@ -75,4 +75,11 @@ class GoodsService extends MongoService{
         goods.detailFileList=detailPic
         return goods
     }
+    def selectByIds(ids){
+        def goods=this.findAll([id:['$in':ids]])
+        def result=goods.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
+                                 remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
+        ]}
+        return result
+    }
 }
