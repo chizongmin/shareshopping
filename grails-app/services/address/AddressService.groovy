@@ -9,8 +9,8 @@ class AddressService extends MongoService{
     String collectionName() {
         "address"
     }
-    def list(){
-        def list=this.findAll([:],[sort:1])
+    def list(keyword){
+        def list=assembleList(keyword)
         def listMap=list.groupBy {it.fid}
         def result=list.findAll{it.fid=="0"}
         def children=list.findAll{it.fid!="0"}
@@ -22,6 +22,20 @@ class AddressService extends MongoService{
             item.children=listMap[item.id]
         }
         return result
+    }
+    def assembleList(keyword){
+        def list=[]
+        if(keyword){
+            list=this.findAll([name:['$regex':keyword, '$options': "i"],fid:['$ne':"0"]],[sort:1])?:[]
+            def groupBy=children.groupBy {it.fid}
+            groupBy?.each{k,v->
+                list<<this.findById(k)
+            }
+
+        }else{
+            list=this.findAll([:],[sort:1])
+        }
+        return list
     }
     def upsertAddress(params){
         def toUpdate=params.subMap(["id","name","fid","status","desc"])
@@ -41,5 +55,11 @@ class AddressService extends MongoService{
         list.eachWithIndex{ entry,  i ->
             this.updateById(entry.id,[sort:i])
         }
+    }
+    def filterList(){
+        def list=this.findAll([:],[sort:1]).collect{[value:it.id,label:it.name,fid:it.fid]}
+        def country=list.findAll{it.fid=="0"}
+        def villager=list.findAll{it.fid!="0"}
+        return [country:country,villager:villager]
     }
 }
