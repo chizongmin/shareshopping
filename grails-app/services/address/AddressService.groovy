@@ -27,7 +27,7 @@ class AddressService extends MongoService{
         def list=[]
         if(keyword){
             list=this.findAll([name:['$regex':keyword, '$options': "i"],fid:['$ne':"0"]],[sort:1])?:[]
-            def groupBy=children.groupBy {it.fid}
+            def groupBy=list.groupBy {it.fid}
             groupBy?.each{k,v->
                 list<<this.findById(k)
             }
