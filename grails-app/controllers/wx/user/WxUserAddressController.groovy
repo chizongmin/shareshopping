@@ -24,4 +24,9 @@ class WxUserAddressController  extends BaseController{
     def publicAddress(){
         rv(addressService.list(params.keyword))
     }
+    def deleteById(){
+        def id=params.id
+        userAddressService.delete([id:id])
+        rv()
+    }
 }
