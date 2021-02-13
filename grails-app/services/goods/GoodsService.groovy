@@ -73,6 +73,7 @@ class GoodsService extends MongoService{
             detailPic<<map
         }
         goods.detailFileList=detailPic
+        goods.saleNumber=goods.saleNumber?:0
         return goods
     }
     def selectByIds(ids){
