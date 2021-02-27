@@ -14,6 +14,7 @@ class WxUserController extends BaseController {
         def token = request.getHeader("token")
         def map=request.getJSON() as HashMap
         userService.updateInfo(token,map)
+
         rv()
     }
 }
