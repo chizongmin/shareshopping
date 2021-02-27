@@ -19,7 +19,7 @@ class UserAddressService extends MongoService{
         def address=addressService.findById(addressId)
         def fAddress=addressService.findById(address.fid)
         def dataMap=[addressId:addressId,strCountry:fAddress?.name,strVillager:address?.name,name:map.name,phone:map.phone,
-                detail:map.detail,default:map.default
+                detail:map.detail,default:map.default,country:map.country,villager:map.villager
         ]
         if(map.default){//更新所有其他的都为非默认
             this.updateBatch([token:token],[default:false])

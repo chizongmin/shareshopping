@@ -24,4 +24,19 @@ class UserService extends MongoService{
         }
         return this.findAll(filter,(pageNumber-1)*pageSize,pageSize,[dateCreated:-1])
     }
+    def info(token){
+        def user=this.findOne([token:token])
+        return user
+    }
+    def upsertUser(openid){
+        def user=this.findOne([token:openid])
+        if(!user){
+            user=this.save([token:openid,score:0,info:[:]])
+        }
+        return user
+    }
+    def updateInfo(token,infoMap){
+        def user=this.findOne([token:token])
+        this.updateById(user.id,[info:infoMap])
+    }
 }
