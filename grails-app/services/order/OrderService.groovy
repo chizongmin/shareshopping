@@ -21,6 +21,7 @@ class OrderService  extends MongoService{
             return result
         }
 //        addressId:addressId,couponId:coupon.id,goods:confirmToService,remark:remark
+
         def userAddress=userAddressService.findById(map.addressId)
         def order=userAddress.subMap(["country","strCountry","villager","strVillager","name","phone"])
         def goods=goodsService.findAll([id:['$in':map.goods*.id]])
