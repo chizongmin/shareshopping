@@ -1,13 +1,16 @@
 package order
-
-import base.InvalidParameterException
 import mongo.MongoService
 import shareshopping.DateTools
 
 class OrderService  extends MongoService{
     def userAddressService
     def goodsService
-
+    def orderNumberService
+    def statusNameMap=[
+            DONG:"处理中",WAIT_PAY:"待支付","DELIVERY":"配送中",
+            WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
+            RETURN_DOING:"退货处理中"
+    ]
     @Override
     String collectionName() {
         "order"
@@ -29,7 +32,7 @@ class OrderService  extends MongoService{
         order.token=token
         order.sum=sum
         order.status="WAIT"
-        order.code="test"
+        order.code=orderNumberService.created()
         order=this.save(order)
         result.data=order
         return result

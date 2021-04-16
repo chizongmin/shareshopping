@@ -15,6 +15,7 @@ class DateTools {
         if(date==null||!(date instanceof Date)){
             date=new Date()
         }
-        return sdf1.format(date)
+        def dateStr= sdf1.format(date)
+        return dateStr.replaceFirst("20","")
     }
 }
