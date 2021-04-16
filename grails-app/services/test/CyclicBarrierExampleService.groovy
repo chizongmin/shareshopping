@@ -2,7 +2,7 @@ package test
 import java.util.concurrent.CyclicBarrier
 
 class CyclicBarrierExampleService {
-    def  orderNumberService
+    def  testService
     def runTask(){
         final CyclicBarrier cb = new CyclicBarrier(10, new Runnable(){
             @Override
@@ -13,7 +13,7 @@ class CyclicBarrierExampleService {
         });
 
         for(int i = 1;i<=10;i++) {
-            Thread  sporter= new Thread(new CyclicBarrierTaskService(cb,orderNumberService) ,i+"号选手");
+            Thread  sporter= new Thread(new CyclicBarrierTaskService(cb,testService) ,i+"号选手");
             sporter.start();
         }
     }

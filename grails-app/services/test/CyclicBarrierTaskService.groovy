@@ -6,10 +6,10 @@ import java.util.concurrent.CyclicBarrier
 class CyclicBarrierTaskService implements Runnable{
 
     private CyclicBarrier barrier;
-    private orderNumberService
-    public CyclicBarrierTaskService(barrier,orderNumberService) {
+    private testService
+    public CyclicBarrierTaskService(barrier,testService) {
         this.barrier = barrier;
-        this.orderNumberService=orderNumberService
+        this.testService=testService
     }
 
     @Override
@@ -17,14 +17,14 @@ class CyclicBarrierTaskService implements Runnable{
         try {
             System.out.println(Thread.currentThread().getName() + " 准备就绪");
             barrier.await();
-            def data=this.getNumber()
+            def data=this.test()
             System.out.println(Thread.currentThread().getName() + " 获取--${data}");
         } catch (InterruptedException ex) {
         } catch (BrokenBarrierException ex) {
         }
     }
-    def getNumber(){
-        def data=orderNumberService.created()
+    def test(){
+        def data=testService.test()
         return data
     }
 }
