@@ -30,7 +30,7 @@ class GoodsService extends MongoService{
     }
     def checkGoodsParams(goods){
         if(!(goods.number instanceof Number)||goods.number<0){
-            throw new InvalidParameterException("goods.number not correct!")
+            throw new InvalidParameterException("goods number not correct!")
         }
     }
     def editList(category,search){
