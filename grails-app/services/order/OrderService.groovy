@@ -24,7 +24,7 @@ class OrderService  extends MongoService{
         if(result.code!=200){
             return result
         }
-//        addressId:addressId,couponId:coupon.id,goods:confirmToService,remark:remark,detail
+//        addressId:addressId,couponId:coupon.id,goods:confirmToService,remark:remark
         def userAddress=userAddressService.findById(map.addressId)
         def order=userAddress.subMap(["country","strCountry","villager","strVillager","name","phone","detail"])
         def sum=0
