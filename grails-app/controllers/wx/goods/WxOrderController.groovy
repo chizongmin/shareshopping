@@ -14,4 +14,8 @@ class WxOrderController extends BaseController{
         def id=params.id
         rv(orderService.findById(id))
     }
+    def userOrderList(){
+        def token=request.getHeader("token")
+        rv(orderService.userOrderList(token,params))
+    }
 }

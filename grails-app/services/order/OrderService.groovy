@@ -77,4 +77,14 @@ class OrderService  extends MongoService{
         }
         return this.findAll(filter,(pageNumber-1)*pageSize,pageSize,[dateCreated:-1])
     }
+    def userOrderList(token,params){
+        def pageNumber=params.int("pageNumber",1)
+        def pageSize=params.int("pageSize",10)
+        def filter=[token:token]
+        if(params.status){
+            filter.status=params.status
+        }
+        def list=this.findAll(filter,(pageNumber-1)*pageSize,pageSize,[dateCreated:-1])
+        return list
+    }
 }
