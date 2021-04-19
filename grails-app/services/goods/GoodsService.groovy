@@ -1,5 +1,6 @@
 package goods
 
+import base.InvalidParameterException
 import mongo.MongoService
 import shareshopping.NameMap
 
@@ -10,6 +11,7 @@ class GoodsService extends MongoService{
         "goods"
     }
     def upsertGoods(goods){
+        this.checkGoodsParams(goods)
         if(goods.id){
             this.updateById(goods.id,goods)
             //更新所有列表商品
@@ -24,6 +26,11 @@ class GoodsService extends MongoService{
             }
         }else{
             this.save(goods)
+        }
+    }
+    def checkGoodsParams(goods){
+        if(!(goods.number instanceof Number)||goods.number<0){
+            throw new InvalidParameterException("goods.number not correct!")
         }
     }
     def editList(category,search){
@@ -82,5 +89,18 @@ class GoodsService extends MongoService{
                                  remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
         ]}
         return result
+    }
+    def reduceNumber(id,number){
+        def data=this.updateOne([id:id,number:['$gte':number]],[ $inc:[number:number]])
+        return data
+    }
+    def addGoodsNumber(goods){
+        goods.each{item->
+            this.addNumber(item.id,item.number)
+        }
+    }
+    def addNumber(id,number){
+        def data=this.updateOne([id:id],[ $inc:[number:number]])
+        return data
     }
 }
