@@ -8,4 +8,7 @@ class TestController extends BaseController{
     def test() {
         rv(cyclicBarrierExampleService.runTask())
     }
+    def testDate(){
+        rv([a:new Date()])
+    }
 }
