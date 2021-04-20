@@ -17,6 +17,15 @@ class OrderService  extends MongoService{
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
             RETURN_DOING:"退货处理中",CANCELED:"已取消"
     ]
+    def availableChangeMap=[
+            DONG:["WAIT_PAY"],
+            DELIVERY:["DONG"],
+            WAIT_CONFIRM:["DELIVERY"],
+            COMPLETED:["WAIT_CONFIRM"],
+            RETURN_DOING:["DONG","DELIVERY","WAIT_CONFIRM"],
+            RETURNED:["RETURN_DOING"],
+            CANCELED:["WAIT_PAY"]
+    ]
     @Override
     String collectionName() {
         "order"
@@ -96,6 +105,19 @@ class OrderService  extends MongoService{
             goodsService.recoverGoodsNumber(order.goods)
         }
         return order
+    }
+    def updateStatus(token,map){
+        def result=[code:200]
+        def orderId=map.orderId
+        def toStatus=map.toStatus
+        def order=this.updateOne([id:orderId,status:['$in':availableChangeMap[toStatus]]],[status:toStatus,strStatus: statusNameMap[toStatus]])
+        if(!order){
+            result.code=Code.orderStatusChangeError
+            result.message="订单状态错误，请刷新数据后重新操作"
+            return result
+        }
+        result.data=order
+        return result
     }
     def checkParams(token,map){
         //map.goods=[[id,name,count]]
