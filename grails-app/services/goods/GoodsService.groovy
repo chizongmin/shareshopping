@@ -91,16 +91,16 @@ class GoodsService extends MongoService{
         return result
     }
     def reduceNumber(id,number){
-        def data=this.updateOne([id:id,number:['$gte':number]],[ $inc:[number:number]])
+        def data=this.updateOne([id:id,number:['$gte':number]],[ $inc:[number:-number,saleNumber:-number]])
         return data
     }
-    def addGoodsNumber(goods){
+    def recoverGoodsNumber(goods){
         goods.each{item->
-            this.addNumber(item.id,item.number)
+            this.addNumber(item.id,item.buyCount)
         }
     }
     def addNumber(id,number){
-        def data=this.updateOne([id:id],[ $inc:[number:number]])
+        def data=this.updateOne([id:id],[ $inc:[number:number,saleNumber:number]])
         return data
     }
 }

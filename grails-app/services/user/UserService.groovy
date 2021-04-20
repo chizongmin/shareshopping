@@ -40,3 +40,18 @@ class UserService extends MongoService{
         this.updateById(user.id,[info:infoMap])
     }
 }
+/**
+ *  "_id" : "603a300b0879b9119ca8ba10",
+ *     "token" : "oCu4B5MbRdvCxLsGmymxp4FoLlNs",
+ *     "score" : NumberInt(0),
+ *     "dateCreated" : ISODate("2021-02-27T11:42:03.698+0000"),
+ *     "lastUpdated" : ISODate("2021-04-17T14:33:58.648+0000"),
+ *     "info" : {*         "country" : "",
+ *         "gender" : NumberInt(0),
+ *         "province" : "",
+ *         "city" : "",
+ *         "avatarUrl" : "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132",
+ *         "nickName" : "微信用户",
+ *         "language" : ""
+ *     }
+ */

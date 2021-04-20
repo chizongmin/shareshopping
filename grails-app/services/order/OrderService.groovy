@@ -5,28 +5,31 @@ import goods.GoodsService
 import mongo.MongoService
 import shareshopping.Code
 import shareshopping.DateTools
+import user.UserCouponService
 
 class OrderService  extends MongoService{
     def userAddressService
     GoodsService goodsService
     def orderNumberService
+    UserCouponService userCouponService
     def statusNameMap=[
             DONG:"处理中",WAIT_PAY:"待支付","DELIVERY":"配送中",
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
-            RETURN_DOING:"退货处理中"
+            RETURN_DOING:"退货处理中",CANCELED:"已取消"
     ]
     @Override
     String collectionName() {
         "order"
     }
     def create(token,map){
+        //  map->      addressId:addressId,couponId:coupon.id,goods:confirmToService,remark:remark
         def result=this.checkParams(token,map)
         if(result.code!=200){
             return result
         }
-//        addressId:addressId,couponId:coupon.id,goods:confirmToService,remark:remark
+        def order=[token:token,status:"WAIT_PAY",strStatus:statusNameMap.WAIT_PAY,code:orderNumberService.created()]
         def userAddress=userAddressService.findById(map.addressId)
-        def order=userAddress.subMap(["country","strCountry","villager","strVillager","name","phone","detail"])
+        order.putAll(userAddress.subMap(["country","strCountry","villager","strVillager","name","phone","detail"]))
         def sum=0
         def goods=[]
         for(def item:map.goods){
@@ -35,7 +38,7 @@ class OrderService  extends MongoService{
                 result.code= Code.goodsDelete
                 result.message="${item.name} 已下架"
                 //还原库存
-                goodsService.addGoodsNumber(goods)
+                goodsService.recoverGoodsNumber(goods)
                 return result
             }
             def reduceNumber=goodsService.reduceNumber(item.id,item.count)
@@ -43,7 +46,7 @@ class OrderService  extends MongoService{
                 result.code= Code.goodsEmpty
                 result.message="${item.name} 库存不足"
                 //还原库存
-                goodsService.addGoodsNumber(goods)
+                goodsService.recoverGoodsNumber(goods)
                 return result
             }
             def saveMap=goodsDetail.subMap(["id","name","indexImage","sum","oldSum","nature","strNature","category","detailFileList","remark"])
@@ -52,14 +55,47 @@ class OrderService  extends MongoService{
             sum+=goodsDetail.sum*item.count
         }
         order.goods=goods
-        order.token=token
         order.sum=sum
-        order.status="WAIT"
-        order.strStatus=statusNameMap.WAIT
-        order.code=orderNumberService.created()
+        order.realSum=sum
+        //处理优惠券业务
+        if(map.couponId){
+            def coupon=userCouponService.useCoupon(token,map.couponId)
+            if(!coupon){
+                result.code= Code.couponNotFound
+                result.message="无可用优惠券"
+                goodsService.recoverGoodsNumber(goods)
+                return result
+            }
+            if(coupon.sum>sum){
+                result.code= Code.couponGtSum
+                result.message="优惠券金额大于商品金额"
+                goodsService.recoverGoodsNumber(goods)
+                return result
+            }
+            order.coupon=[id:coupon.id,name:coupon.name,sum:coupon.sum,type:coupon.type]
+            order.realSum=sum-coupon.sum
+        }
         order=this.save(order)
         result.data=order
         return result
+    }
+    def paySuccess(orderId){
+        def toUpdate=[status:"DONG",strStatus:statusNameMap.DONG,payTime:new Date()]
+        def order=this.updateOne([id:orderId,status:"WAIT_PAY"],toUpdate)
+        return order
+    }
+    def orderCancel(orderId){
+        def toUpdate=[status:"CANCELED",strStatus:statusNameMap.CANCELED,cancelTime:new Date()]
+        def order=this.updateOne([id:orderId,status:"WAIT_PAY"],toUpdate)
+        if(order){
+            //还原优惠券
+            if(order.coupon){
+                userCouponService.recoverCoupon(order.token,order.coupon.id)
+            }
+            //还原库存
+            goodsService.recoverGoodsNumber(order.goods)
+        }
+        return order
     }
     def checkParams(token,map){
         //map.goods=[[id,name,count]]
@@ -110,5 +146,7 @@ class OrderService  extends MongoService{
  *         id,name,sum,oldSum,indexImage,buyCount,nature,strNature,category,detailFileList,remark
  *     }
  *     ]
+ *     payTime:支付时间
+ *     cancelTime:订单取消时间
  *
  */
