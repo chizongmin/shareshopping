@@ -2,6 +2,18 @@ package user
 
 import mongo.MongoService
 
+/**
+ *     "addressId" : "1000101",
+ *     "strCountry" : "宽城县城",
+ *     "strVillager" : "兆丰小区",
+ *     "name" : "王博",
+ *     "phone" : "13249594594",
+ *     "detail" : "一号楼一单元101",
+ *     "default" : true,
+ *     "country" : "1000100",
+ *     "villager" : "1000101",
+ *     "token" : "oCu4B5MbRdvCxLsGmymxp4FoLlNs"
+ */
 class UserAddressService extends MongoService{
 
     @Override

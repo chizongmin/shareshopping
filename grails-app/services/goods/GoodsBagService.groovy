@@ -56,3 +56,10 @@ class GoodsBagService extends MongoService{
         this.delete([token:token,goodsId:['$in':ids]])
     }
 }
+/**
+ *     "_id" : "601d54b40879b92d6c0e0fa8",
+ *     "token" : "oCu4B5MbRdvCxLsGmymxp4FoLlNs",
+ *     "goodsId" : "5ffc583f0879b95388ce384d",
+ *     "total" : NumberInt(1) 收藏数量
+ *
+ */

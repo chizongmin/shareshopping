@@ -104,3 +104,33 @@ class GoodsService extends MongoService{
         return data
     }
 }
+/**
+ {
+ "_id" : "6006e0790879b90d9c4c939c",
+ "number" : NumberInt(10),
+ "lastUpdated" : ISODate("2021-02-07T13:03:41.533+0000"),
+ "dateCreated" : "2021-01-19T13:36:57Z",
+ "nature" : "normal",
+ "indexImage" : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQA,
+ "name" : "特价水果这hi是一个产巢字段测试个产巢字段测试（5斤）",
+ "saleNumber" : NumberInt(1222),
+ "oldSum" : 22.9,
+ "sum" : 10.2,
+ "category" : "vegetables",
+ "status" : "ENABLE",
+ "desc" : "工作中我们有的时候会需要去获取一张图片的颜色值或者颜色代码，
+ "id" : "6006e0790879b90d9c4c939c",
+ "strNature" : "一般商品",
+ "strStatus" : "启用",
+ "detailFileList" : [
+ {
+ "uid" : NumberLong(1611239977617),
+ "name" : "file",
+ "id" : "600992290879b91f183b4b32",
+ "url" : "/api/file/preview?id=600992290879b91f183b4b32",
+ "status" : "success"
+ }
+ ],
+ "remark" : "超市价￥25" //标签
+ }
+ */

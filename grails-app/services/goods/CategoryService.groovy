@@ -91,3 +91,14 @@ class CategoryService extends MongoService{
         result
     }
 }
+/**
+ *      "_id" : "rexiao",
+ *     "name" : "特价商品",
+ *     "status" : "ENABLE",
+ *     "sort" : NumberInt(0),
+ *     "desc" : "此为推荐商品",
+ *     "strStatus" : "启用",
+ *     "goods" : [
+ *          {goods}
+ * ]
+ */

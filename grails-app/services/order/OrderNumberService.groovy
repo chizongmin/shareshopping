@@ -3,7 +3,6 @@ package order
 import com.mongodb.client.model.ReturnDocument
 import mongo.MongoService
 import shareshopping.DateTools
-
 class OrderNumberService extends MongoService{
 
     @Override
@@ -19,3 +18,7 @@ class OrderNumberService extends MongoService{
         return dateStr+randomNumber+data.sequecce
     }
 }
+/**
+ "_id" : "210412",
+ "sequecce" : NumberInt(10)
+ */

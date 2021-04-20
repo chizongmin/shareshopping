@@ -16,3 +16,6 @@ class CouponService extends MongoService{
         return all
     }
 }
+/**
+ * id,name,sum,
+ */

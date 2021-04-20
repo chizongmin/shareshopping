@@ -46,15 +46,16 @@ class OrderService  extends MongoService{
                 goodsService.addGoodsNumber(goods)
                 return result
             }
-            def saveMap=goodsDetail.subMap(["id","name","indexImage","sum"])
+            def saveMap=goodsDetail.subMap(["id","name","indexImage","sum","oldSum","nature","strNature","category","detailFileList","remark"])
             saveMap.buyCount=item.count
             goods<<saveMap
             sum+=goodsDetail.sum*item.count
         }
+        order.goods=goods
         order.token=token
         order.sum=sum
         order.status="WAIT"
-        order.statusName=statusNameMap.WAIT
+        order.strStatus=statusNameMap.WAIT
         order.code=orderNumberService.created()
         order=this.save(order)
         result.data=order
@@ -88,3 +89,26 @@ class OrderService  extends MongoService{
         return list
     }
 }
+
+/**
+ *     "country" : "1000100",
+ *     "strCountry" : "宽城县城",
+ *     "villager" : "1000101",
+ *     "strVillager" : "兆丰小区",
+ *     "name" : "王博",
+ *     "phone" : "13249594594",
+ *     "token" : "oCu4B5MbRdvCxLsGmymxp4FoLlNs",
+ *     "sum" : 10.2, 商品金额
+ *     realSum:10 实际金额
+ *     couponId:优惠券id
+ *     couponSum:优惠券减免额
+ *     "status" : "DONG",
+ *      strStatus:处理中
+ *     "code" : "2104122586",
+ *     goods:[
+ *     {
+ *         id,name,sum,oldSum,indexImage,buyCount,nature,strNature,category,detailFileList,remark
+ *     }
+ *     ]
+ *
+ */
