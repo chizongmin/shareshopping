@@ -3,15 +3,19 @@ package order
 import base.InvalidParameterException
 import goods.GoodsService
 import mongo.MongoService
+import org.apache.commons.lang3.time.DateUtils
 import shareshopping.Code
 import shareshopping.DateTools
 import user.UserCouponService
+import user.UserService
 
 class OrderService  extends MongoService{
+    static int payExpirationHours=3
     def userAddressService
     GoodsService goodsService
     def orderNumberService
     UserCouponService userCouponService
+    UserService userService
     def statusNameMap=[
             DONG:"处理中",WAIT_PAY:"待支付","DELIVERY":"配送中",
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
@@ -84,6 +88,7 @@ class OrderService  extends MongoService{
             order.coupon=[id:coupon.id,name:coupon.name,sum:coupon.sum,type:coupon.type]
             order.realSum=sum-coupon.sum
         }
+        order.payExpirationTime=DateUtils.addHours(new Date(),payExpirationHours)
         order=this.save(order)
         result.data=order
         return result
@@ -115,6 +120,10 @@ class OrderService  extends MongoService{
             result.code=Code.orderStatusChangeError
             result.message="订单状态错误，请刷新数据后重新操作"
             return result
+        }
+        if(toStatus=="COMPLETED"){ //给用户添加积分
+            def score=order.realSum
+            userService.updateOne([token:order.token],[$inc:[score:score]])
         }
         result.data=order
         return result
@@ -169,6 +178,7 @@ class OrderService  extends MongoService{
  *     }
  *     ]
  *     payTime:支付时间
+ *     payExpirationTime:支付过期时间
  *     cancelTime:订单取消时间
  *
  */

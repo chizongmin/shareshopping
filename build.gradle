@@ -67,6 +67,7 @@ dependencies {
     compile 'org.grails:grails-datastore-rest-client:6.1.12.RELEASE'
     compile "net.javacrumbs.shedlock:shedlock-spring:4.5.2"
     compile "net.javacrumbs.shedlock:shedlock-provider-mongo:4.5.2"
+    compile 'org.codehaus.gpars:gpars:1.2.1'
 }
 
 bootRun {

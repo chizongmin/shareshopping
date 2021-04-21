@@ -51,7 +51,24 @@ abstract class MongoService implements InitializingBean{
         FindIterable result = mongoCollection.find(filter).sort(sort).batchSize(DEFAULT_BATCH_SIZE)
         result.collect { _idToId(it) }
     }
-
+    def findAll(Map filter, Map sort, List fields, int batchSize = DEFAULT_BATCH_SIZE) {
+        idTo_Id(filter)
+        def projection = [:]
+        fields?.each {
+            projection."${it}" = 1
+        }
+        FindIterable result =mongoCollection.find(filter, projection).sort(sort).batchSize(batchSize)
+        result.collect { _idToId(it) }
+    }
+    def findAll(Map filter,List fields, int batchSize = DEFAULT_BATCH_SIZE) {
+        idTo_Id(filter)
+        def projection = [:]
+        fields?.each {
+            projection."${it}" = 1
+        }
+        FindIterable result =mongoCollection.find(filter, projection).batchSize(batchSize)
+        result.collect { _idToId(it) }
+    }
     def findAll(Map filter, int offset, int max, Map sort, fields = null) {
         idTo_Id(filter)
         def projection = [:]
