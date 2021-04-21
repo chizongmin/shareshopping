@@ -9,7 +9,7 @@ class OrderNumberService extends MongoService{
     String collectionName() {
         "orderNumber"
     }
-    def created(){
+    def create(){
         def dateStr=DateTools.dateString()
         def randomNumber=((int)(Math.random()*900)+100).toString()
         def  data=mongoCollection.findOneAndUpdate([_id:dateStr],

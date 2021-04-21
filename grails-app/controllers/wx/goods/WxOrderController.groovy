@@ -1,10 +1,11 @@
 package wx.goods
 
+import order.OrderService
 import shareshopping.BaseController
 
 class WxOrderController extends BaseController{
-    def orderService
-    def created() {
+    OrderService orderService
+    def create() {
         def token=request.getHeader("token")
         def map=request.getJSON() as HashMap
         def result=orderService.create(token,map)

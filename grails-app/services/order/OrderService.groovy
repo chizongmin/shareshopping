@@ -13,7 +13,7 @@ class OrderService  extends MongoService{
     static int payExpirationHours=3
     def userAddressService
     GoodsService goodsService
-    def orderNumberService
+    OrderNumberService orderNumberService
     UserCouponService userCouponService
     UserService userService
     def statusNameMap=[
@@ -40,7 +40,7 @@ class OrderService  extends MongoService{
         if(result.code!=200){
             return result
         }
-        def order=[token:token,status:"WAIT_PAY",strStatus:statusNameMap.WAIT_PAY,code:orderNumberService.created()]
+        def order=[token:token,status:"WAIT_PAY",strStatus:statusNameMap.WAIT_PAY,code:orderNumberService.create()]
         def userAddress=userAddressService.findById(map.addressId)
         order.putAll(userAddress.subMap(["country","strCountry","villager","strVillager","name","phone","detail"]))
         def sum=0

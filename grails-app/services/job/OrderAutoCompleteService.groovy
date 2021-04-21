@@ -19,7 +19,7 @@ class OrderAutoCompleteService {
                     def autoTime= DateUtils.addDays(order.dateCreated,autoCompleteDays)
                     if(new Date().after(autoTime)){ //到期
                         def data=orderService.updateStatus("",[order.id,"COMPLETED"])
-                        log.info("自动完成订单：${order.id},complete order:${data?.id}")
+                        log.info("自动完成订单：${order.id},complete order:${data?.data?.id}")
                     }
                 } catch (Exception e) {
                     log.error("订单：${order.id} auto complete error",e)
