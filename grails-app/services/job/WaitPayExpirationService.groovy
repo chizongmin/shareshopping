@@ -9,8 +9,8 @@ class WaitPayExpirationService {
     static lazyInit = false
     OrderService orderService
     @Scheduled(cron = '0 0/1 * * * ?')
-    @SchedulerLock(name = "payExpiration")
-    void taksRun() {
+    @SchedulerLock(name = "waitPayExpiration")
+    void taskRun() {
         def orderList=orderService.findAll([status:"WAIT_PAY",payExpirationTime:['$lt':new Date()]])
         orderList.each{order->
             try {

@@ -11,7 +11,7 @@ class OrderAutoCompleteService {
     OrderService orderService
     @Scheduled(cron = '0 0/1 * * * ?')
     @SchedulerLock(name = "orderAutoComplete")
-    void taksRun() {
+    void taskRun() {
         def orderList=orderService.findAll([status:"WAIT_CONFIRM"],["id","status","dateCreated"])
         withPool(3) {
             orderList.eachParallel { order ->
