@@ -132,7 +132,13 @@ abstract class MongoService implements InitializingBean{
         def result = mongoCollection.findOneAndUpdate(["_id": id], ['$set': update], ['returnDocument': ReturnDocument.AFTER])
         _idToId(result)
     }
-
+    def updateIncOne(Map filter, Map update,Map inc) {
+        idTo_Id(filter)
+        handleLastUpdated(update)
+        idFilter(filter)
+        def result = mongoCollection.findOneAndUpdate(filter, ['$set': update, '$inc': inc], ['returnDocument': ReturnDocument.AFTER])
+        _idToId(result)
+    }
     def updateOne(Map filter, Map update) {
         idTo_Id(filter)
         handleLastUpdated(update)

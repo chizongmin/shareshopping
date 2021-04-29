@@ -64,6 +64,7 @@ class OrderService  extends MongoService{
         def userAddress=userAddressService.findById(map.addressId)
         order.putAll(userAddress.subMap(["country","strCountry","villager","strVillager","name","phone","detail"]))
         def sum=0
+        def totalGoodsCount=0
         def goods=[]
         for(def item:map.goods){
             def goodsDetail=goodsService.findById(item.id)
@@ -84,10 +85,12 @@ class OrderService  extends MongoService{
             }
             def saveMap=goodsDetail.subMap(["id","name","indexImage","sum","oldSum","nature","strNature","category","detailFileList","remark"])
             saveMap.buyCount=item.count
+            totalGoodsCount+=item.count
             goods<<saveMap
             sum+=goodsDetail.sum*item.count
         }
         order.goods=goods
+        order.totalGoodsCount=totalGoodsCount
         order.sum=sum
         order.realSum=sum
         //处理优惠券业务
@@ -143,7 +146,7 @@ class OrderService  extends MongoService{
         }
         if(toStatus=="COMPLETED"){ //给用户添加积分
             def score=order.realSum
-            userService.updateOne([token:order.token],[$inc:[score:score]])
+            userService.updateIncOne([token:order.token],[:],[score:score])
         }
         result.data=order
         return result
@@ -169,7 +172,7 @@ class OrderService  extends MongoService{
         def pageNumber=params.int("pageNumber",1)
         def pageSize=params.int("pageSize",10)
         def filter=[:]
-        if(params.from="user"){
+        if(params.from=="user"){
             filter.token=token
         }else{
             def user=userService.info(token)
@@ -184,6 +187,7 @@ class OrderService  extends MongoService{
         list.items.each{ order->
             order.userShowChangeButton=userShowChangeButton[order.status]
             order.managerShowChangeButton=managerShowChangeButton[order.status]
+            order.createdDate=DateTools.formatDate(order.dateCreated)
         }
         return list
     }

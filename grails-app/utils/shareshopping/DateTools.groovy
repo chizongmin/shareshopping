@@ -11,6 +11,12 @@ class DateTools {
         }
         return sdf.parse(dateStr)
     }
+    static formatDate(date){
+        if(!date){
+            return null
+        }
+        return sdf.format(date)
+    }
     static dateString(date=null){
         if(date==null||!(date instanceof Date)){
             date=new Date()

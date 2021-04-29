@@ -22,7 +22,7 @@ class CouponService extends MongoService{
     def exchangeCoupon(token,couponId){
         def result=[code:200]
         def coupon=this.findById(couponId)
-        def data=userService.updateOne([token:token,score:['$gte':coupon.score]],[ $inc:[score:-coupon.score]])
+        def data=userService.updateIncOne([token:token,score:['$gte':coupon.score]],[:],[score:-coupon.score])
         if(!data){
             result.code= Code.scoreNotEnough
             result.message="积分不足"
