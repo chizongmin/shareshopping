@@ -148,9 +148,17 @@ class OrderService  extends MongoService{
     def userOrderList(token,params){
         def pageNumber=params.int("pageNumber",1)
         def pageSize=params.int("pageSize",10)
-        def filter=[token:token]
+        def filter=[:]
+        if(params.from="user"){
+            filter.token=token
+        }else{
+            def user=userService.info(token)
+            def managerVillager=user.managerVillager
+            filter.villager=managerVillager
+        }
         if(params.status){
-            filter.status=params.status
+            def statusList=params.status.split(",") as ArrayList
+            filter.status=['$in':statusList]
         }
         def list=this.findAll(filter,(pageNumber-1)*pageSize,pageSize,[dateCreated:-1])
         return list
