@@ -21,7 +21,7 @@ class OrderService  extends MongoService{
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
             RETURN_DOING:"退货处理中",CANCELED:"已取消"
     ]
-    def availableChangeMap=[
+    def fromStatusChangeMap=[
             DONG:["WAIT_PAY"],
             DELIVERY:["DONG"],
             WAIT_CONFIRM:["DELIVERY"],
@@ -29,6 +29,26 @@ class OrderService  extends MongoService{
             RETURN_DOING:["DONG","DELIVERY","WAIT_CONFIRM"],
             RETURNED:["RETURN_DOING"],
             CANCELED:["WAIT_PAY"]
+    ]
+    def userShowChangeButton=[
+            WAIT_PAY:["CANCELED","PAY"],
+            DONG:["RETURN_DOING"],
+            DELIVERY:["RETURN_DOING"],
+            WAIT_CONFIRM:["RETURN_DOING","COMPLETED"],
+            COMPLETED:[],
+            RETURN_DOING:[],
+            RETURNED:[],
+            CANCELED:[]
+    ]
+    def managerShowChangeButton=[
+            WAIT_PAY:[],
+            DONG:[],
+            DELIVERY:["WAIT_CONFIRM"],
+            WAIT_CONFIRM:[],
+            COMPLETED:[],
+            RETURN_DOING:["RETURNED"],
+            RETURNED:[],
+            CANCELED:[]
     ]
     @Override
     String collectionName() {
@@ -115,7 +135,7 @@ class OrderService  extends MongoService{
         def result=[code:200]
         def orderId=map.orderId
         def toStatus=map.toStatus
-        def order=this.updateOne([id:orderId,status:['$in':availableChangeMap[toStatus]]],[status:toStatus,strStatus: statusNameMap[toStatus]])
+        def order=this.updateOne([id:orderId,status:['$in':fromStatusChangeMap[toStatus]]],[status:toStatus,strStatus: statusNameMap[toStatus]])
         if(!order){
             result.code=Code.orderStatusChangeError
             result.message="订单状态错误，请刷新数据后重新操作"
@@ -161,6 +181,10 @@ class OrderService  extends MongoService{
             filter.status=['$in':statusList]
         }
         def list=this.findAll(filter,(pageNumber-1)*pageSize,pageSize,[dateCreated:-1])
+        list.items.each{ order->
+            order.userShowChangeButton=userShowChangeButton[order.status]
+            order.managerShowChangeButton=managerShowChangeButton[order.status]
+        }
         return list
     }
 }
