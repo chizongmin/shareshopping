@@ -31,10 +31,10 @@ class OrderService  extends MongoService{
             CANCELED:["WAIT_PAY"]
     ]
     def userShowChangeButton=[
-            WAIT_PAY:["CANCELED","PAY"],
-            DONG:["RETURN_DOING"],
-            DELIVERY:["RETURN_DOING"],
-            WAIT_CONFIRM:["RETURN_DOING","COMPLETED"],
+            WAIT_PAY:[[id:"CANCELED",name:"取消"],[id:"PAY",name:"付款"]],
+            DONG:[[id:"RETURN_DOING",name:"退款"]],
+            DELIVERY:[[id:"RETURN_DOING",name:"退款"]],
+            WAIT_CONFIRM:[[id:"RETURN_DOING",name:"退款"],[id:"COMPLETED",name:"确认收货"]],
             COMPLETED:[],
             RETURN_DOING:[],
             RETURNED:[],
@@ -43,10 +43,10 @@ class OrderService  extends MongoService{
     def managerShowChangeButton=[
             WAIT_PAY:[],
             DONG:[],
-            DELIVERY:["WAIT_CONFIRM"],
+            DELIVERY:[[id:"WAIT_CONFIRM",name:"已送达"]],
             WAIT_CONFIRM:[],
             COMPLETED:[],
-            RETURN_DOING:["RETURNED"],
+            RETURN_DOING:[[id:"RETURNED",name:"已退货"]],
             RETURNED:[],
             CANCELED:[]
     ]
