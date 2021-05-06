@@ -1,13 +1,16 @@
 package base
 import grails.converters.JSON
 import groovy.json.JsonSlurper
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import org.grails.web.json.JSONElement
 import org.springframework.http.MediaType
-
 class HttpService {
 
     static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(HttpService)
-
+    static okHttpClient=new OkHttpClient()
     static postJson(url, action, payload, customHeaders = null) {
         def paramsBody = [:]
         try {
@@ -21,7 +24,7 @@ class HttpService {
             paramsBody = payload
         }
         def response = RestfulService.post(url, action) {
-            contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+            contentType(MediaType.APPLICATION_JSON_VALUE)
             customHeaders?.each { k, v ->
                 header(k, String.valueOf(v))
             }
@@ -31,7 +34,7 @@ class HttpService {
             logger.error("Failed to request service ${url} with header ${customHeaders}, data ${payload}")
             throw new SystemException(response?.status ?: 500, response?.json?.code ?: 500, response?.json?.message)
         }
-        return response?.json
+        return response.json
     }
 
     static postForm(url, action, formData, customHeaders = null) {
@@ -93,5 +96,24 @@ class HttpService {
         }
         return response
     }
+    static QRCode(url, action, payload, customHeaders = null) {
+        url=url+"/"+action
+        def bodyStr=(payload as JSON).toString()
+        RequestBody body = FormBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8")
+                , bodyStr)
+        def builder = new Request.Builder()
+                .url(url)
+                .post(body);
+        if (customHeaders) {
+            customHeaders.each {
+                builder.addHeader(it.key, it.value)
+            }
+        }
 
+        def request = builder.build()
+        logger.debug("post msg: ${bodyStr} to ${url}")
+        def response = okHttpClient.newCall(request).execute()
+        def bytes=response.body().bytes()
+        return bytes
+    }
 }

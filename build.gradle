@@ -68,6 +68,7 @@ dependencies {
     compile "net.javacrumbs.shedlock:shedlock-spring:4.5.2"
     compile "net.javacrumbs.shedlock:shedlock-provider-mongo:4.5.2"
     compile 'org.codehaus.gpars:gpars:1.2.1'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
 }
 
 bootRun {
