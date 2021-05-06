@@ -16,6 +16,7 @@ class OrderService  extends MongoService{
     OrderNumberService orderNumberService
     UserCouponService userCouponService
     UserService userService
+    OrderActivityService orderActivityService
     def statusNameMap=[
             DONG:"处理中",WAIT_PAY:"待支付","DELIVERY":"配送中",
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
@@ -113,6 +114,7 @@ class OrderService  extends MongoService{
         }
         order.payExpirationTime=DateUtils.addHours(new Date(),payExpirationHours)
         order=this.save(order)
+        orderActivityService.addActivity(order.id)
         result.data=order
         return result
     }
@@ -132,6 +134,7 @@ class OrderService  extends MongoService{
             //还原库存
             goodsService.recoverGoodsNumber(order.goods)
         }
+        orderActivityService.addActivity(order.id)
         return order
     }
     def updateStatus(token,map){
@@ -146,8 +149,9 @@ class OrderService  extends MongoService{
         }
         if(toStatus=="COMPLETED"){ //给用户添加积分
             def score=order.realSum
-            userService.updateIncOne([token:order.token],[:],[score:score])
+            userService.addScore(token,score)
         }
+        orderActivityService.addActivity(order.id)
         result.data=order
         return result
     }

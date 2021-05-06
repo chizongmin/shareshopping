@@ -4,7 +4,7 @@ import mongo.MongoService
 import shareshopping.DateTools
 
 class UserService extends MongoService{
-
+    UserScoreActivityService userScoreActivityService
     @Override
     String collectionName() {
         "user"
@@ -38,6 +38,11 @@ class UserService extends MongoService{
     def updateInfo(token,infoMap){
         def user=this.findOne([token:token])
         this.updateById(user.id,[info:infoMap])
+    }
+    def addScore(token,addScore){
+        def user=this.updateIncOne([token:token],[:],[score:addScore])
+        def toSave=[token:token,score:user.score,change:addScore,action:"plus"]
+        userScoreActivityService.save(toSave)
     }
 }
 /**
