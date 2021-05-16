@@ -20,6 +20,6 @@ class WxUserController extends BaseController {
     }
     def scoreActivity(){
         def token = request.getHeader("token")
-        rv(userScoreActivityService.scoreActivity(token))
+        rv(userScoreActivityService.scoreActivity(token,params))
     }
 }

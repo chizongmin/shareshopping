@@ -41,7 +41,7 @@ class UserService extends MongoService{
     }
     def addScore(token,addScore){
         def user=this.updateIncOne([token:token],[:],[score:addScore])
-        def toSave=[token:token,score:user.score,change:addScore,action:"plus"]
+        def toSave=[token:token,score:user.score,change:addScore,action:"plus",type:"consume"]
         userScoreActivityService.save(toSave)
     }
 }

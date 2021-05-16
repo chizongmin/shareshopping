@@ -30,7 +30,7 @@ class CouponService extends MongoService{
             result.message="积分不足"
             return result
         }
-        userScoreActivityService.save([token:token,score:user.score,change:coupon.score,action:"reduce"])
+        userScoreActivityService.save([token:token,score:user.score,change:coupon.score,action:"reduce",type:"exchangeCoupon"])
         //向用户添加优惠券
         result.data=userCouponService.addCoupon(token,coupon)
         return result
