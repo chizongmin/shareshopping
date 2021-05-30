@@ -7,9 +7,9 @@ class WxUserController extends BaseController {
     def userService
     UserScoreActivityService userScoreActivityService
 
-    def info() {
+    def home() {
         def token = request.getHeader("token")
-        def result = userService.info(token)
+        def result = userService.home(token)
         rv(result)
     }
     def updateInfo() {

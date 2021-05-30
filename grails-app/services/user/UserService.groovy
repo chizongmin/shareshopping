@@ -5,6 +5,7 @@ import shareshopping.DateTools
 
 class UserService extends MongoService{
     UserScoreActivityService userScoreActivityService
+    UserCouponService userCouponService
     @Override
     String collectionName() {
         "user"
@@ -26,6 +27,12 @@ class UserService extends MongoService{
     }
     def info(token){
         def user=this.findOne([token:token])
+        return user
+    }
+    def home(token){
+        def user=this.info(token)
+        def couponCount=userCouponService.count([token:token,status:"ENABLE"])
+        user.couponCount=couponCount
         return user
     }
     def upsertUser(openid){
