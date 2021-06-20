@@ -9,7 +9,8 @@ class WxUserCouponController extends BaseController{
     CouponService couponService
     def userCoupon() {
         def token = request.getHeader("token")
-        rv(userCouponService.selectAll(token))
+        def status=params.status
+        rv(userCouponService.selectAll(token,status))
     }
     def systemCouponList(){
         rv(couponService.availableList())

@@ -6,6 +6,7 @@ class DateTools {
     static sdf=new SimpleDateFormat("yyyy-MM-dd")
     static sdf1=new SimpleDateFormat("yyyyMMdd")
     static sdf2=new SimpleDateFormat("yyyy.MM.dd")
+    static sdf3=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     static parseDate(dateStr){
         if(!dateStr){
             return null
@@ -20,9 +21,15 @@ class DateTools {
     }
     static formatDate2(date){
         if(!date){
-            return null
+            return ""
         }
         return sdf2.format(date)
+    }
+    static formatDate3(date){
+        if(!date){
+            return ""
+        }
+        return sdf3.format(date)
     }
     static dateString(date=null){
         if(date==null||!(date instanceof Date)){

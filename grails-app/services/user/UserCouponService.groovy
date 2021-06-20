@@ -12,8 +12,8 @@ class UserCouponService extends MongoService{
     String collectionName() {
         "userCoupon"
     }
-    def selectAll(token){
-        def list=this.findAll([token:token,status:"ENABLE"],[dateCreated:-1])
+    def selectAll(token,status){
+        def list=this.findAll([token:token,status:status],[dateCreated:-1])
         return list
     }
     def addCoupon(token,coupon){

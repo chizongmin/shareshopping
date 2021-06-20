@@ -63,7 +63,8 @@ class OrderService  extends MongoService{
         }
         def order=[token:token,status:"WAIT_PAY",strStatus:statusNameMap.WAIT_PAY,code:orderNumberService.create()]
         def userAddress=userAddressService.findById(map.addressId)
-        order.putAll(userAddress.subMap(["country","strCountry","villager","strVillager","name","phone","detail"]))
+        order.putAll(userAddress.subMap(["country","strCountry","villager","strVillager","name","phone"]))
+        order.address=userAddress.detail
         def sum=0
         def totalGoodsCount=0
         def goods=[]
@@ -194,6 +195,14 @@ class OrderService  extends MongoService{
             order.createdDate=DateTools.formatDate(order.dateCreated)
         }
         return list
+    }
+    def selectById(id){
+        def order=this.findById(id)
+        order.createdDate=DateTools.formatDate(order.dateCreated)
+        order.createdDateDetail=DateTools.formatDate3(order.dateCreated)
+        order.payTime=DateTools.formatDate3(order.payTime)
+        order.userShowChangeButton=userShowChangeButton[order.status]
+        return order
     }
 }
 
