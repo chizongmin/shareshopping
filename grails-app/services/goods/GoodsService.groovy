@@ -3,9 +3,11 @@ package goods
 import base.InvalidParameterException
 import mongo.MongoService
 import shareshopping.NameMap
+import user.UserCouponService
 
 class GoodsService extends MongoService{
     def categoryService
+    UserCouponService userCouponService
     @Override
     String collectionName() {
         "goods"
@@ -103,6 +105,12 @@ class GoodsService extends MongoService{
         def data=this.updateIncOne([id:id],[:],[number:number,saleNumber:number])
         return data
     }
+    def confirmGoods(token,ids){
+        def goods=this.selectByIds(ids)
+        def userCoupons=userCouponService.selectAll(token,"ENABLE")
+        return [goods:goods,userCoupons:userCoupons]
+    }
+
 }
 /**
  {

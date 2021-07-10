@@ -13,6 +13,12 @@ class WxOrderController extends BaseController{
         def result=orderService.create(token,map)
         rv(result.data,result.code,result.message)
     }
+    def paySuccess() {
+        def token=request.getHeader("token")
+        def map=request.getJSON() as HashMap
+        orderService.paySuccess(token,map.orderId)
+        rv()
+    }
     def findById(){
         def id=params.id
         rv(orderService.selectById(id))

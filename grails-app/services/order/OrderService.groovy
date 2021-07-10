@@ -9,6 +9,8 @@ import shareshopping.DateTools
 import user.UserCouponService
 import user.UserService
 
+import java.text.DecimalFormat
+
 class OrderService  extends MongoService{
     static int payExpirationHours=3
     def userAddressService
@@ -104,14 +106,20 @@ class OrderService  extends MongoService{
                 goodsService.recoverGoodsNumber(goods)
                 return result
             }
-            if(coupon.sum>sum){
+            /*if(coupon.sum>sum){
                 result.code= Code.couponGtSum
                 result.message="优惠券金额大于商品金额"
                 goodsService.recoverGoodsNumber(goods)
                 return result
-            }
+            }*/
             order.coupon=[id:coupon.id,name:coupon.name,sum:coupon.sum,type:coupon.type]
-            order.realSum=sum-coupon.sum
+            def realSum=sum-coupon.sum
+            BigDecimal bg = new BigDecimal(realSum);
+            realSum = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            if(realSum<0){
+                realSum=0
+            }
+            order.realSum=realSum
         }
         order.payExpirationTime=DateUtils.addHours(new Date(),payExpirationHours)
         order=this.save(order)
@@ -119,7 +127,7 @@ class OrderService  extends MongoService{
         result.data=order
         return result
     }
-    def paySuccess(orderId){
+    def paySuccess(token,orderId){
         def toUpdate=[status:"DONG",strStatus:statusNameMap.DONG,payTime:new Date()]
         def order=this.updateOne([id:orderId,status:"WAIT_PAY"],toUpdate)
         return order

@@ -21,4 +21,9 @@ class WxGoodsController extends BaseController{
         def map=request.getJSON() as HashMap
         rv(goodsService.selectByIds(map.ids))
     }
+    def confirmGoods(){
+        def token=request.getHeader("token")
+        def map=request.getJSON() as HashMap
+        rv(goodsService.confirmGoods(token,map.ids))
+    }
 }
