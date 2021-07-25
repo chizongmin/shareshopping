@@ -27,7 +27,7 @@ appender('FILE', RollingFileAppender){
         Pattern = "%d %level %logger %thread - %msg%n"
     }
     rollingPolicy(TimeBasedRollingPolicy) {
-        FileNamePattern = "${BuildSettings.BASE_DIR}/logslogs/log.%d{yyyy-MM-dd}.log"
+        FileNamePattern = "/logs/log.%d{yyyy-MM-dd}.log"
         maxHistory = 180
     }
 }

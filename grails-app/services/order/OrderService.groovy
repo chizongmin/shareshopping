@@ -1,6 +1,7 @@
 package order
 
 import base.InvalidParameterException
+import goods.GoodsBagService
 import goods.GoodsService
 import mongo.MongoService
 import org.apache.commons.lang3.time.DateUtils
@@ -19,6 +20,7 @@ class OrderService  extends MongoService{
     UserCouponService userCouponService
     UserService userService
     OrderActivityService orderActivityService
+    GoodsBagService goodsBagService
     def statusNameMap=[
             DONG:"处理中",WAIT_PAY:"待支付","DELIVERY":"配送中",
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
@@ -72,9 +74,9 @@ class OrderService  extends MongoService{
         def goods=[]
         for(def item:map.goods){
             def goodsDetail=goodsService.findById(item.id)
-            if(!goodsDetail){ //不存在，商品已下架
+            if(!goodsDetail||goodsDetail.status!="ENABLE"){ //不存在，商品已下架
                 result.code= Code.goodsDelete
-                result.message="${item.name} 已下架"
+                result.message="${goodsDetail.name} 已下架"
                 //还原库存
                 goodsService.recoverGoodsNumber(goods)
                 return result
@@ -82,7 +84,7 @@ class OrderService  extends MongoService{
             def reduceNumber=goodsService.reduceNumber(item.id,item.count)
             if(!reduceNumber){ //库存不足
                 result.code= Code.goodsEmpty
-                result.message="${item.name} 库存不足"
+                result.message="${goodsDetail.name} 库存不足,商品余量为${goodsDetail.number}"
                 //还原库存
                 goodsService.recoverGoodsNumber(goods)
                 return result
@@ -125,6 +127,8 @@ class OrderService  extends MongoService{
         order=this.save(order)
         orderActivityService.addActivity(order.id)
         result.data=order
+        //去掉购物车里面相关商品
+        goodsBagService.delete([token:token,goodsId:['$in':goods*.id]])
         return result
     }
     def paySuccess(token,orderId){
