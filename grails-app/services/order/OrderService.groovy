@@ -22,7 +22,7 @@ class OrderService  extends MongoService{
     OrderActivityService orderActivityService
     GoodsBagService goodsBagService
     def statusNameMap=[
-            DONG:"处理中",WAIT_PAY:"待支付","DELIVERY":"配送中",
+            DONG:"配货中",WAIT_PAY:"待支付","DELIVERY":"配送中",
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
             RETURN_DOING:"退货处理中",CANCELED:"已取消"
     ]
