@@ -9,4 +9,6 @@ interface Code {
     int couponGtSum=1212 //优惠券金额大于商品金额
     //订单状态
     int orderStatusChangeError=1301 //订单状态流转错误
+    //标签
+    int tagRepeat=1401 //标签重复
 }
