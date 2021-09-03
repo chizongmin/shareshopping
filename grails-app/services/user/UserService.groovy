@@ -46,7 +46,10 @@ class UserService extends MongoService{
         def user=this.findOne([token:token])
         this.updateById(user.id,[info:infoMap])
     }
-    def addScore(token,addScore){
+    def addScore(token,order){
+        def realSum=order.realSum
+        def scorePercent=order.scorePercent?:1
+        def addScore=new BigDecimal(realSum*scorePercent).setScale(0, BigDecimal.ROUND_HALF_UP).intValue()
         def user=this.updateIncOne([token:token],[:],[score:addScore])
         def toSave=[token:token,score:user.score,change:addScore,action:"plus",type:"consume"]
         userScoreActivityService.save(toSave)

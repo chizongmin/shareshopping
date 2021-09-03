@@ -140,5 +140,6 @@ class GoodsService extends MongoService{
  }
  ],
  "remark" : "超市价￥25" //标签
+ commission:但物品佣金
  }
  */

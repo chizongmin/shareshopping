@@ -1,12 +1,15 @@
 package order
 
+import address.AddressService
 import base.InvalidParameterException
 import goods.GoodsBagService
 import goods.GoodsService
+import mongo.ConfigService
 import mongo.MongoService
 import org.apache.commons.lang3.time.DateUtils
 import shareshopping.Code
 import shareshopping.DateTools
+import user.UserAddressService
 import user.UserCouponService
 import user.UserService
 
@@ -14,13 +17,15 @@ import java.text.DecimalFormat
 
 class OrderService  extends MongoService{
     static int payExpirationHours=3
-    def userAddressService
+    UserAddressService userAddressService
+    AddressService addressService
     GoodsService goodsService
     OrderNumberService orderNumberService
     UserCouponService userCouponService
     UserService userService
     OrderActivityService orderActivityService
     GoodsBagService goodsBagService
+    ConfigService configService
     def statusNameMap=[
             DONG:"配货中",WAIT_PAY:"待支付","DELIVERY":"配送中",
             WAIT_CONFIRM:"待确认",COMPLETED:"已完成",RETURNED:"已退货",
@@ -65,13 +70,29 @@ class OrderService  extends MongoService{
         if(result.code!=200){
             return result
         }
+        //校验服务是否可用
+        def service=configService.findById("service")
+        if(service?.value?.switch==false){
+            result.code= Code.serviceStop
+            result.message=service?.value?.message
+            return result
+        }
         def order=[token:token,status:"WAIT_PAY",strStatus:statusNameMap.WAIT_PAY,code:orderNumberService.create()]
         def userAddress=userAddressService.findById(map.addressId)
+        //校验地址配送是否支持
+        def address=addressService.findById(userAddress.addressId)
+        if(address.status!="ENABLE"){
+            result.code= Code.addressDisable
+            result.message="当前地址不持支配送"
+            return result
+        }
         order.putAll(userAddress.subMap(["country","strCountry","villager","strVillager","name","phone"]))
         order.address=userAddress.detail
         def sum=0
         def totalGoodsCount=0
         def goods=[]
+        def commission=0
+        def nature=[]
         for(def item:map.goods){
             def goodsDetail=goodsService.findById(item.id)
             if(!goodsDetail||goodsDetail.status!="ENABLE"){ //不存在，商品已下架
@@ -89,16 +110,27 @@ class OrderService  extends MongoService{
                 goodsService.recoverGoodsNumber(goods)
                 return result
             }
+            nature<<goodsDetail.nature?:"normal"
+            //校验商品属性，不同属性得物品不能放到同一订单
             def saveMap=goodsDetail.subMap(["id","name","indexImage","sum","oldSum","nature","strNature","category","detailFileList","remark"])
             saveMap.buyCount=item.count
             totalGoodsCount+=item.count
             goods<<saveMap
             sum+=goodsDetail.sum*item.count
+            commission+=goodsDetail.commission*item.count
         }
+        if(nature.unique().size()>1){
+            result.code= Code.goodsNatureDiff
+            result.message="支付商品属性不相同，不可一起支付"
+            goodsService.recoverGoodsNumber(goods)
+            return result
+        }
+        order.payType=nature[0]
         order.goods=goods
         order.totalGoodsCount=totalGoodsCount
-        order.sum=sum
-        order.realSum=sum
+        order.sum= new BigDecimal(sum).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()
+        order.realSum=order.sum
+        order.commission= new BigDecimal(commission).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()
         //处理优惠券业务
         if(map.couponId){
             def coupon=userCouponService.useCoupon(token,map.couponId)
@@ -115,15 +147,16 @@ class OrderService  extends MongoService{
                 return result
             }*/
             order.coupon=[id:coupon.id,name:coupon.name,sum:coupon.sum,type:coupon.type]
-            def realSum=sum-coupon.sum
-            BigDecimal bg = new BigDecimal(realSum);
-            realSum = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            def realSum = new BigDecimal(sum-coupon.sum).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()
             if(realSum<0){
                 realSum=0
             }
             order.realSum=realSum
         }
         order.payExpirationTime=DateUtils.addHours(new Date(),payExpirationHours)
+        //积分百分比
+        def scorePercent=configService.findById("scorePercent")?.value
+        order.scorePercent=scorePercent
         order=this.save(order)
         orderActivityService.addActivity(order.id)
         result.data=order
@@ -161,8 +194,8 @@ class OrderService  extends MongoService{
             return result
         }
         if(toStatus=="COMPLETED"){ //给用户添加积分
-            def score=order.realSum
-            userService.addScore(token,score)
+
+            userService.addScore(token,order)
         }
         orderActivityService.addActivity(order.id)
         result.data=order
@@ -238,8 +271,11 @@ class OrderService  extends MongoService{
  *         id,name,sum,oldSum,indexImage,buyCount,nature,strNature,category,detailFileList,remark
  *     }
  *     ]
- *     payTime:支付时间
- *     payExpirationTime:支付过期时间
- *     cancelTime:订单取消时间
+ *     payTime:支付时间，
+ *     payExpirationTime:支付过期时间，
+ *     cancelTime:订单取消时间，
+ *     scorePercent:1  积分比例
+ *     commission:订单佣金
+ *     payType:支付方式
  *
  */
