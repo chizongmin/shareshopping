@@ -158,7 +158,7 @@ class OrderService  extends MongoService{
         def scorePercent=configService.findById("scorePercent")?.value
         order.scorePercent=scorePercent
         order=this.save(order)
-        orderActivityService.addActivity(order.id)
+        orderActivityService.addActivity(token,order.id)
         result.data=order
         //去掉购物车里面相关商品
         goodsBagService.delete([token:token,goodsId:['$in':goods*.id]])
@@ -169,7 +169,7 @@ class OrderService  extends MongoService{
         def order=this.updateOne([id:orderId,status:"WAIT_PAY"],toUpdate)
         return order
     }
-    def orderCancel(orderId){
+    def orderCancel(orderId,operatorToken){
         def toUpdate=[status:"CANCELED",strStatus:statusNameMap.CANCELED,cancelTime:new Date()]
         def order=this.updateOne([id:orderId,status:"WAIT_PAY"],toUpdate)
         if(order){
@@ -180,10 +180,10 @@ class OrderService  extends MongoService{
             //还原库存
             goodsService.recoverGoodsNumber(order.goods)
         }
-        orderActivityService.addActivity(order.id)
+        orderActivityService.addActivity(operatorToken,order.id)
         return order
     }
-    def updateStatus(token,map){
+    def updateStatus(operatorToken,map){
         def result=[code:200]
         def orderId=map.orderId
         def toStatus=map.toStatus
@@ -195,9 +195,9 @@ class OrderService  extends MongoService{
         }
         if(toStatus=="COMPLETED"){ //给用户添加积分
 
-            userService.addScore(token,order)
+            userService.addScore(order.token,order)
         }
-        orderActivityService.addActivity(order.id)
+        orderActivityService.addActivity(operatorToken,order.id)
         result.data=order
         return result
     }

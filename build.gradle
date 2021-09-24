@@ -62,7 +62,8 @@ dependencies {
     compile 'org.grails:gorm-mongodb-spring-boot:7.0.0.RELEASE'
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-web-testing-support"
-//    compile 'org.grails.plugins:redis:2.0.5'
+    compile 'org.grails.plugins:redis:2.0.5'
+    implementation 'redis.clients:jedis:2.9.0'
     compile 'org.apache.httpcomponents:httpclient:4.5.13'
     compile 'org.grails:grails-datastore-rest-client:6.1.12.RELEASE'
     compile "net.javacrumbs.shedlock:shedlock-spring:4.5.2"

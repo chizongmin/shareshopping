@@ -1,9 +1,10 @@
 package wx.goods
 
+import goods.CategoryService
 import shareshopping.BaseController
 
 class WxGoodsController extends BaseController{
-    def categoryService
+    CategoryService categoryService
     def goodsService
     def tabList() {
         def data=categoryService.tabList()
