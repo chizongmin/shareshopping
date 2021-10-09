@@ -7,7 +7,7 @@ class RedisController extends BaseController{
     GedisService gedisService
     def getValue() {
         def key=params.key
-        def strValue=gedisService.hmget(key)
+        def strValue=gedisService.get(key)
         if(strValue){
             strValue= JSON.parse(strValue)
         }
