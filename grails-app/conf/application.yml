@@ -95,6 +95,14 @@ environments:
                     socketTimeout: 60000
                     socketKeepAlive: true
                     #readPreference: secondaryPreferred
+            redis:
+                poolConfig:
+                    maxIdle: 10
+                    doesnotexist: true
+                host: 127.0.0.1
+                port: 6379
+                timeout: 2000
+                database: 0
     production:
         grails:
             mongodb:
@@ -109,3 +117,11 @@ environments:
                     socketTimeout: 60000
                     socketKeepAlive: true
                     #readPreference: secondaryPreferred
+            redis:
+                poolConfig:
+                    maxIdle: 10
+                    doesnotexist: true
+                host: 127.0.0.1
+                port: 6379
+                timeout: 2000
+                database: 1
