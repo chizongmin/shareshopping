@@ -20,12 +20,17 @@ class GedisService {
 
     String get(String key, boolean burnAfterReading = false) {
         assert key
-        redisService.withRedis { Jedis jedis ->
-            def result = jedis.get(key)
-            if (burnAfterReading) {
-                jedis.del(key)
+        try {
+            redisService.withRedis { Jedis jedis ->
+                def result = jedis.get(key)
+                if (burnAfterReading) {
+                    jedis.del(key)
+                }
+                return result
             }
-            return result
+        } catch (Exception e ) {
+            log.error(e.message,e)
+            return null
         }
     }
 
@@ -52,8 +57,13 @@ class GedisService {
         assert expireSeconds > 0
         assert key
         assert value
-        redisService.withRedis { Jedis jedis ->
-            jedis.setex(key, expireSeconds, value)
+        try {
+            redisService.withRedis { Jedis jedis ->
+                jedis.setex(key, expireSeconds, value)
+            }
+        } catch (Exception e ) {
+            log.error(e.message,e)
+            return null
         }
     }
 

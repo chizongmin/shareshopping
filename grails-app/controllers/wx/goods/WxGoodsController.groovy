@@ -1,11 +1,12 @@
 package wx.goods
 
 import goods.CategoryService
+import goods.GoodsService
 import shareshopping.BaseController
 
 class WxGoodsController extends BaseController{
     CategoryService categoryService
-    def goodsService
+    GoodsService goodsService
     def tabList() {
         def data=categoryService.tabList()
         rv(data)
@@ -16,7 +17,7 @@ class WxGoodsController extends BaseController{
     }
     def findById(){
         def id=params.id
-        rv(goodsService.selectById(id))
+        rv(goodsService.selectByIdWithCache(id))
     }
     def findByIds(){
         def map=request.getJSON() as HashMap

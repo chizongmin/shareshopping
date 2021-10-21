@@ -1,15 +1,21 @@
 package goods
 
+import base.GedisService
 import base.InvalidParameterException
+import grails.converters.JSON
 import mongo.MongoService
+import org.springframework.beans.factory.annotation.Value
 import shareshopping.NameMap
 
 class CategoryService extends MongoService{
-
     @Override
     String collectionName() {
         "category"
     }
+    @Value('${station}')
+    String station
+    GedisService gedisService
+    GoodsService goodsService
     def editList(params){
         def filter=[:]
         if(params.status){
@@ -63,32 +69,46 @@ class CategoryService extends MongoService{
         this.updateById(id,[goods:goods])
     }
     def tabList(){
-        def result=[]
-        def list=this.findAll([status:"ENABLE"],[sort:1])
-        list.eachWithIndex{ item, i ->
-            def map=[id:item.id,name:item.name]
-            if(i==0){
-                def goods=item.goods?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
-                        remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
-                ]}
-                map.goods=goods
-            }else{
-                map.goods=[]
+        def key=station+"tabList"
+        def result=gedisService.get(key)?:[]
+        if(!result){
+            def list=this.findAll([status:"ENABLE"],[sort:1])
+            list.eachWithIndex{ item, i ->
+                def map=[id:item.id,name:item.name]
+                if(i==0){
+                    def goodsList=goodsService.findAll([id:['$in':item.goods*.id]])
+                    def goods=goodsList?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
+                                                   remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
+                    ]}
+                    map.goods=goods
+                }else{
+                    map.goods=[]
+                }
+                result<<map
             }
-            result<<map
+            gedisService.memoize(key,(result as JSON).toString(),600)
+        }else{
+            result= JSON.parse(result)
         }
         return result
     }
     def tabMapGoods(){
-        def result=[:]
-        def list=this.findAll([status:"ENABLE"])
-        list.each{item->
-            def goods=item.goods?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
-                                           remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
-            ]}
-            result[item.id]=goods
+        def key=station+"tabMapGoods"
+        def result=gedisService.get(key)?:[:]
+        if(!result){
+            def list=this.findAll([status:"ENABLE"])
+            list.each{item->
+                def goodsList=goodsService.findAll([id:['$in':item.goods*.id]])
+                def goods=goodsList?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
+                                               remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
+                ]}
+                result[item.id]=goods
+            }
+            gedisService.memoize(key,(result as JSON).toString(),600)
+        }else{
+            result= JSON.parse(result)
         }
-        result
+        return result
     }
 }
 /**

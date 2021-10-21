@@ -1,6 +1,8 @@
 package goods
 
+import base.GedisService
 import base.InvalidParameterException
+import grails.converters.JSON
 import mongo.MongoService
 import shareshopping.NameMap
 import user.UserCouponService
@@ -8,6 +10,7 @@ import user.UserCouponService
 class GoodsService extends MongoService{
     def categoryService
     UserCouponService userCouponService
+    GedisService gedisService
     @Override
     String collectionName() {
         "goods"
@@ -77,12 +80,24 @@ class GoodsService extends MongoService{
         def detailFileList=goods.detailFileList?:[]
         def detailPic=[]
         detailFileList.each{
-            def url=it.url.replaceFirst("/api","")
+//            def url=it.url.replaceFirst("/api","")
             def map=[id:it.id,url:url]
             detailPic<<map
         }
         goods.detailFileList=detailPic
         goods.saleNumber=goods.saleNumber?:0
+        return goods
+    }
+    def selectByIdWithCache(id){
+        def goods=gedisService.get(id)
+        if(!goods){
+            goods=this.selectById(id)
+            if(goods){
+                gedisService.memoize(id,goods.toJson().toString(),600)
+            }
+        }else{
+            goods=JSON.parse(goods)
+        }
         return goods
     }
     def selectByIds(ids){
