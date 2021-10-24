@@ -18,17 +18,10 @@ class GoodsService extends MongoService{
     def upsertGoods(goods){
         this.checkGoodsParams(goods)
         if(goods.id){
+            goods.remove("number") //去掉库存
             this.updateById(goods.id,goods)
-            //更新所有列表商品
-            def allCategory=categoryService.findAll([:])
-            allCategory.each{category->
-                def goodsList=category.goods?:[]
-                def index=goodsList.findIndexOf {it.id==goods.id}
-                if(index!=-1){
-                    goodsList[index]=goods
-                }
-                categoryService.updateById(category.id,[goods:goodsList])
-            }
+            //更新redis 缓存
+            this.resetReidsCache([goods.id])
         }else{
             this.save(goods)
         }
@@ -41,7 +34,7 @@ class GoodsService extends MongoService{
     def editList(category,search){
         def filter=[category:category]
         if(search){
-            filter.name=['$regex':search, '$options': "i"]
+            filter.'$or'=[[name:['$regex':search, '$options': "i"]],[tags:['$regex':search, '$options': "i"]]]
         }
         def list=this.findAll(filter,[dateCreated:-1])
         list.each{ goods->
@@ -81,7 +74,7 @@ class GoodsService extends MongoService{
         def detailPic=[]
         detailFileList.each{
 //            def url=it.url.replaceFirst("/api","")
-            def map=[id:it.id,url:url]
+            def map=[id:it.id,url:it.url]
             detailPic<<map
         }
         goods.detailFileList=detailPic
@@ -91,10 +84,7 @@ class GoodsService extends MongoService{
     def selectByIdWithCache(id){
         def goods=gedisService.get(id)
         if(!goods){
-            goods=this.selectById(id)
-            if(goods){
-                gedisService.memoize(id,goods.toJson().toString(),600)
-            }
+            this.setGoodsDetailCache([id])
         }else{
             goods=JSON.parse(goods)
         }
@@ -125,7 +115,21 @@ class GoodsService extends MongoService{
         def userCoupons=userCouponService.selectAll(token,"ENABLE")
         return [goods:goods,userCoupons:userCoupons]
     }
-
+    //缓存处理
+    def setGoodsDetailCache(ids){
+        ids.each{id->
+            def goods=this.selectById(id)
+            if(goods){
+                gedisService.memoize(id,goods.toJson().toString(),600)
+            }
+        }
+    }
+    //更改商品更新缓存
+    def resetReidsCache(ids){
+        this.setGoodsDetailCache(ids)
+        categoryService.setTabListCache()
+        categoryService.setTabMapGoodsCache()
+    }
 }
 /**
  {
@@ -155,6 +159,6 @@ class GoodsService extends MongoService{
  }
  ],
  "remark" : "超市价￥25" //标签
- commission:但物品佣金
+ commission:配送佣金
  }
  */

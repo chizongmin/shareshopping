@@ -72,21 +72,7 @@ class CategoryService extends MongoService{
         def key=station+"tabList"
         def result=gedisService.get(key)?:[]
         if(!result){
-            def list=this.findAll([status:"ENABLE"],[sort:1])
-            list.eachWithIndex{ item, i ->
-                def map=[id:item.id,name:item.name]
-                if(i==0){
-                    def goodsList=goodsService.findAll([id:['$in':item.goods*.id]])
-                    def goods=goodsList?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
-                                                   remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
-                    ]}
-                    map.goods=goods
-                }else{
-                    map.goods=[]
-                }
-                result<<map
-            }
-            gedisService.memoize(key,(result as JSON).toString(),600)
+            result=this.setTabListCache()
         }else{
             result= JSON.parse(result)
         }
@@ -96,18 +82,44 @@ class CategoryService extends MongoService{
         def key=station+"tabMapGoods"
         def result=gedisService.get(key)?:[:]
         if(!result){
-            def list=this.findAll([status:"ENABLE"])
-            list.each{item->
-                def goodsList=goodsService.findAll([id:['$in':item.goods*.id]])
-                def goods=goodsList?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
-                                               remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
-                ]}
-                result[item.id]=goods
-            }
-            gedisService.memoize(key,(result as JSON).toString(),600)
+            result=this.setTabMapGoodsCache()
         }else{
             result= JSON.parse(result)
         }
+        return result
+    }
+    def setTabListCache(){
+        def result=[]
+        def key=station+"tabMapGoods"
+        def list=this.findAll([status:"ENABLE"],[sort:1])
+        list.eachWithIndex{ item, i ->
+            def map=[id:item.id,name:item.name]
+            if(i==0){
+                def goodsList=goodsService.findAll([id:['$in':item.goods*.id]])
+                def goods=goodsList?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
+                                              remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
+                ]}
+                map.goods=goods
+            }else{
+                map.goods=[]
+            }
+            result<<map
+        }
+        gedisService.memoize(key,(result as JSON).toString(),600)
+        return result
+    }
+    def setTabMapGoodsCache(){
+        def key=station+"tabMapGoods"
+        def result=[:]
+        def list=this.findAll([status:"ENABLE"])
+        list.each{item->
+            def goodsList=goodsService.findAll([id:['$in':item.goods*.id]])
+            def goods=goodsList?.collect{[id:it.id,name:it.name,sum:it.sum,oldSum:it.oldSum,
+                                          remark:it.remark?:"",indexImage:it.indexImage,number:it.number,saleNumber:it.saleNumber?:0
+            ]}
+            result[item.id]=goods
+        }
+        gedisService.memoize(key,(result as JSON).toString(),600)
         return result
     }
 }

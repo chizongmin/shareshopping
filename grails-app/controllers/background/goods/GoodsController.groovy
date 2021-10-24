@@ -21,4 +21,7 @@ class GoodsController extends BaseController{
         def data=goodsService.addToCategoryList(params.index)
         rv(data)
     }
+    def changeNumber(){
+        rv(null,200,"suuuuuuuuuuuuu")
+    }
 }
